@@ -82,3 +82,46 @@ button:disabled {
   #copyButton:hover {
     background-color: #0056b3;
   }  
+
+  #historyContainer {
+    margin-top: 20px;
+  }
+  
+  #historyTable {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  #historyTable th, #historyTable td {
+    padding: 10px;
+    border: 1px solid #ccc;
+  }
+  
+  #historyTable th {
+    background-color: #f4f4f4;
+  }
+  
+  .history-action-btn {
+    padding: 5px 10px;
+    font-size: 0.9em;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  
+  .history-action-btn.copy {
+    background-color: #007BFF;
+  }
+  
+  .history-action-btn.copy:hover {
+    background-color: #0056b3;
+  }
+
+  .history-action-btn.show {
+    background-color: #28a745; /* Green color */
+  }
+  
+  .history-action-btn.show:hover {
+    background-color: #218838; /* Darker green on hover */
+  }
