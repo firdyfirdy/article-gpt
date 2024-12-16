@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ArticleGPT</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <h1>ArticleGPT</h1>
+  <div id="loadingOverlay">
+    <img src="assets/loading.gif" alt="Loading..."> <!-- Ganti dengan ikon loading Anda -->
+  </div>
+  <form id="articleForm">
+    <label for="apiKey">API Key:</label>
+    <input type="text" id="apiKey" placeholder="Enter OpenAI API Key" required>
+
+    <label for="keyword">Keyword:</label>
+    <input type="text" id="keyword" placeholder="Enter keyword" required>
+
+    <label for="language">Language:</label>
+    <select id="language">
+      <option value="Bahasa Indonesia">Bahasa Indonesia</option>
+      <option value="English">English</option>
+    </select>
+
+    <label for="style">Writing Style:</label>
+    <select id="style">
+        <option value="academic">Academic</option>
+        <option value="professional">Professional</option>
+        <option value="creative">Creative</option>
+        <option value="general">General</option>
+        <option value="casual">Casual</option>
+        <option value="funny">Funny</option>
+        <option value="sarcastic">Sarcastic</option>
+        <option value="formal">Formal</option>
+        <option value="informative">Informative</option>
+    </select>
+
+    <label for="maxWords">Max Word Count:</label>
+    <input type="number" id="maxWords" placeholder="Max words (e.g., 500)" required>
+
+    <button type="submit">Generate Article</button>
+  </form>
+
+  <div id="outputContainer" style="display: none;">
+    <div style="display: flex; justify-content: flex-end; align-items: center;">
+        <button id="copyButton">Copy</button>
+      </div>
+    <div id="articleOutput"></div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
