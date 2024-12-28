@@ -3,6 +3,21 @@ const loadingOverlay = document.getElementById('loadingOverlay');
 const outputContainer = document.getElementById('outputContainer');
 const apiKeyInput = document.getElementById('apiKey');
 const historyTableBody = document.querySelector("#historyTable tbody");
+const modal = document.getElementById('modal');
+const openOptionsButton = document.getElementById('openOptions');
+const closeModalButton = document.getElementById('closeModal');
+const configurationsEndpoint = document.getElementById('configurationsEndpoint');
+const configurationsModel = document.getElementById('configurationsModel');
+let endpoint = "https://api.openai.com/v1";
+let model = "gpt-3.5-turbo";
+
+openOptionsButton.addEventListener('click', () => {
+    modal.classList.remove('hidden');
+});
+
+closeModalButton.addEventListener('click', () => {
+    modal.classList.add('hidden');
+});
 
 document.addEventListener('DOMContentLoaded', () => {
     chrome.storage.sync.get(['apiKey'], (result) => {
@@ -14,9 +29,44 @@ document.addEventListener('DOMContentLoaded', () => {
     chrome.storage.local.get(['articleHistory'], (result) => {
         const history = result.articleHistory || [];
         history.forEach(({ keyword, article }) => {
-          addHistoryRow(keyword, article);
+            addHistoryRow(keyword, article);
         });
-      });
+    });
+
+    chrome.storage.sync.get(['configurationsEndpoint'], (result) => {
+        if (result.configurationsEndpoint) {
+            configurationsEndpoint.value = result.configurationsEndpoint;
+            endpoint = result.configurationsEndpoint;
+        }else{
+            configurationsEndpoint.value = "https://api.openai.com/v1";
+            endpoint = "https://api.openai.com/v1";
+        }
+    });
+
+    chrome.storage.sync.get(['configurationsModel'], (result) => {
+        if (result.configurationsModel) {
+            configurationsModel.value = result.configurationsModel;
+            model = result.configurationsModel;
+        }else{
+            configurationsModel.value = "gpt-3.5-turbo";
+            model = "gpt-3.5-turbo";
+        }
+    });
+});
+
+document.getElementById('saveConfig').addEventListener('click', () => {
+    if (!configurationsEndpoint.value.trim() || !configurationsModel.value.trim()) {
+        alert("All fields are required!");
+        return;
+    }
+
+    chrome.storage.sync.set({ 
+        configurationsEndpoint: configurationsEndpoint.value.trim(),
+        configurationsModel: configurationsModel.value.trim()
+    });
+    endpoint = configurationsEndpoint;
+    model = configurationsModel;
+    modal.classList.add('hidden');
 });
 
 document.getElementById('articleForm').addEventListener('submit', async (e) => {
@@ -53,17 +103,17 @@ document.getElementById('articleForm').addEventListener('submit', async (e) => {
     
         // Call OpenAI API
         try {
-            const response = await fetch("https://api.openai.com/v1/completions", {
+            const response = await fetch(`${endpoint}/completions`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${apiKey}`
                 },
                 body: JSON.stringify({
-                model: "gpt-3.5-turbo-instruct",
+                model: model,
                 prompt: prompt,
-                max_tokens: maxWords, // Approx. word to token ratio
-                temperature: 0.7
+                max_tokens: maxWords,
+                temperature: 0.5
                 })
             });
         
