@@ -62,7 +62,7 @@ document.getElementById('articleForm').addEventListener('submit', async (e) => {
                 body: JSON.stringify({
                 model: "gpt-3.5-turbo-instruct",
                 prompt: prompt,
-                max_tokens: maxWords * 4, // Approx. word to token ratio
+                max_tokens: maxWords, // Approx. word to token ratio
                 temperature: 0.7
                 })
             });
@@ -77,9 +77,10 @@ document.getElementById('articleForm').addEventListener('submit', async (e) => {
         
             // Display article
             const outputContainer = document.getElementById('outputContainer');
-            const articleOutput = document.getElementById('articleOutput');
-        
-            articleOutput.innerHTML = article;
+            const iframe = document.getElementById('articleOutput');
+            const blob = new Blob([article], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            iframe.src = url;
         
             outputContainer.style.display = "block";
         } catch (error) {
@@ -96,9 +97,13 @@ document.getElementById('articleForm').addEventListener('submit', async (e) => {
   
   // Copy to clipboard
 document.getElementById('copyButton').addEventListener('click', () => {
-    const articleHTML = document.getElementById('articleOutput').innerHTML;
-    navigator.clipboard.writeText(articleHTML).then(() => {
-    //   alert("Article copied to clipboard!");
+    const iframe = document.getElementById('articleOutput');
+    const iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
+
+    // Accessing the body of the iframe
+    const iframeBody = iframeDocument.body.innerHTML;
+    navigator.clipboard.writeText(iframeBody).then(() => {
+        // alert("Article copied to clipboard!");
     }).catch(() => {
         alert("Failed to copy!");
     });
@@ -122,29 +127,75 @@ function saveArticleToHistory(keyword, article) {
   
 function addHistoryRow(keyword, article) {
     const row = document.createElement("tr");
+    row.classList.add("bg-white", "border-b", "dark:bg-gray-800", "dark:border-gray-700", "hover:bg-gray-50", "dark:hover:bg-gray-600");
 
     // Keyword column
     const keywordCell = document.createElement("td");
+    keywordCell.classList.add("px-6", "py-4");
     keywordCell.textContent = keyword;
     row.appendChild(keywordCell);
 
     // Actions column
     const actionsCell = document.createElement("td");
+    actionsCell.classList.add("px-6", "py-4");
+
     const copyButton = document.createElement("button");
-    copyButton.textContent = "Copy";
-    copyButton.classList.add("history-action-btn", "copy");
+    copyButton.classList.add(
+        "history-action-btn", // Existing class
+        "copy",               // Existing class
+        "bg-blue-500",       // Background color
+        "text-white",        // Text color
+        "py-1",              // Smaller vertical padding
+        "px-1",              // Smaller horizontal padding
+        "text-sm",           // Smaller text size
+        "rounded",           // Rounded corners
+        "hover:bg-blue-600", // Hover background color
+        "focus:outline-none", // Remove outline on focus
+        "focus:ring-2",      // Ring effect on focus
+        "focus:ring-blue-400" // Ring color
+    );
+    // Create the icon element
+    const copyIcon = document.createElement("i");
+    copyIcon.classList.add("fas", "fa-clipboard"); // Font Awesome classes for the eye icon
+    copyIcon.style.fontSize = "1rem"; // Adjust size if needed
+
+    // Append the icon to the button
+    copyButton.appendChild(copyIcon);
+
 
     // Show Button
     const showButton = document.createElement("button");
-    showButton.textContent = "Show";
-    showButton.classList.add("history-action-btn", "show");
-    showButton.style.marginLeft = "10px"; // Add some spacing between buttons
-    showButton.addEventListener("click", () => {
-        // Display article in the articleOutput container
-        const outputContainer = document.getElementById('outputContainer');
-        const articleOutput = document.getElementById('articleOutput');
+    showButton.classList.add(
+        "history-action-btn", // Existing class
+        "show",               // Existing class
+        "bg-green-500",      // Background color
+        "text-white",        // Text color
+        "py-1",              // Smaller vertical padding
+        "px-1",              // Smaller horizontal padding
+        "text-sm",           // Smaller text size
+        "rounded",           // Rounded corners
+        "hover:bg-green-600", // Hover background color
+        "focus:outline-none", // Remove outline on focus
+        "focus:ring-2",      // Ring effect on focus
+        "focus:ring-green-400" // Ring color
+    );
+    // Create the icon element
+    const eyeIcon = document.createElement("i");
+    eyeIcon.classList.add("fas", "fa-magnifying-glass"); // Font Awesome classes for the eye icon
+    eyeIcon.style.fontSize = "1rem"; // Adjust size if needed
+
+    // Append the icon to the button
+    showButton.appendChild(eyeIcon);
     
-        articleOutput.innerHTML = article;
+    // showButton.style.marginLeft = "10px"; // Add some spacing between buttons
+    showButton.addEventListener("click", () => {
+        // Create a data URL with the HTML content
+        const blob = new Blob([article], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+
+        // Set the iframe's source to the data URL
+        const iframe = document.getElementById('articleOutput');
+        iframe.src = url;
         outputContainer.style.display = "block";
     });
 
